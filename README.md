@@ -1,9 +1,9 @@
 # Тестовое задание для стажировки "Нашкодим - Android"
-### Дополнительные библиотеки
+## Дополнительные библиотеки
 * [Decompose](https://github.com/arkivanov/Decompose/) + [MVIKotlin](https://github.com/arkivanov/mvikotlin)
 * [Koin](https://insert-koin.io/)
 * [Kotlin Immutable collections](https://github.com/Kotlin/kotlinx.collections.immutable)
-### Декомпозиция задачи:
+## Декомпозиция задачи:
 Глобально задачу можно разделить на работу по нескольким направлениям:
 - Domain layer
 - Data layer
@@ -12,7 +12,7 @@
   - Screens and components
 - Testing
 
-##### Domain
+### Domain
 Начнём с domain слоя, т.к. от него зависят все остальные:
 - Models:
   - Coin<br>
@@ -32,7 +32,7 @@
 
 Тестировать тут нечего (UseCase-ы тривиальные), так что идем дальше к, пожалуй, Presentation navigation
 
-##### Presentation navigation and logic
+### Presentation navigation and logic
 - CurrencyListComponent
 - CoinListComponent
 - CoinDetailsComponent
@@ -41,7 +41,7 @@
 Также для них нужны тесты. Если не знакомы с decompose + mvikotlin, то я 
 постараюсь с помощью комментариев объяснить большинство моментов.
 
-#### Presentation ui components
+### Presentation ui components
 На первый взгляд напрашиваются такие компоненты:
 - Toolbar для списка криптовалют
 - Toolbar для дополнительной информации
@@ -71,7 +71,7 @@
 не будет об этом знать, т.к. они располагаются в другом модуле.<br>
 [Подробнее об этом](https://developer.android.com/develop/ui/compose/performance/stability/fix#modules-solution)
 
-#### Data layer
+### Data layer
 - Repositories impls
 - API
   - /coins/markets - криптовалюты
