@@ -6,6 +6,6 @@ class GetCoinListUseCase(
     private val repository: CoinRepository
 ) {
 
-    suspend operator fun invoke() = repository.getCoins()
+    operator fun invoke() = repository.getCoins()
 
 }
