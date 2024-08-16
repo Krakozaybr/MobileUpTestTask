@@ -13,6 +13,14 @@ dependencies {
 
     implementation(libs.decompose.core)
 
+    testImplementation(libs.junit)
+    testRuntimeOnly(libs.junit.engine)
+    testImplementation(libs.kotlin.coroutines.test)
+
+}
+
+tasks.withType<Test> {
+    useJUnitPlatform()
 }
 
 java {
