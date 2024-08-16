@@ -15,8 +15,8 @@
 ### Domain
 Начнём с domain слоя, т.к. от него зависят все остальные:
 - Models:
-  - Coin<br>
-    (*Можно было бы разбить на CoinInfo и CoinDetails, но оставим так*) 
+  - CoinInfo
+  - CoinDetails
   - Currency
 - Repository:
   - CoinRepository
@@ -75,5 +75,6 @@
 - Repositories impls
 - API
   - /coins/markets - криптовалюты
+  - /coins/<id> - детальная информация
   - /simple/supported_vs_currencies - валюты в тулбаре (RUB, USD...)
 - DTOs and mappers
