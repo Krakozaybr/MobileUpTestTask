@@ -6,6 +6,6 @@ class GetCoinInfoUseCase(
     private val repository: CoinRepository
 ) {
 
-    suspend operator fun invoke(id: String) = repository.getCoinDetails(id)
+    operator fun invoke(id: String) = repository.getCoinDetails(id)
 
 }

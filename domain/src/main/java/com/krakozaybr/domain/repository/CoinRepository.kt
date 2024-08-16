@@ -5,11 +5,12 @@ import com.krakozaybr.domain.model.CoinInfo
 import com.krakozaybr.domain.resource.FailureReason
 import com.krakozaybr.domain.resource.Resource
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.flow.Flow
 
 interface CoinRepository {
 
-    suspend fun getCoins(): Resource<ImmutableList<CoinInfo>, FailureReason>
+    fun getCoins(): Flow<Resource<ImmutableList<CoinInfo>, FailureReason>>
 
-    suspend fun getCoinDetails(id: String): Resource<CoinDetails, FailureReason>
+    fun getCoinDetails(id: String): Flow<Resource<CoinDetails, FailureReason>>
 
 }

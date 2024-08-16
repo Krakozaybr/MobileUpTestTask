@@ -6,6 +6,6 @@ class GetCurrencyListUseCase(
     private val repository: CurrencyRepository
 ) {
 
-    suspend operator fun invoke() = repository.getCurrencies()
+    operator fun invoke() = repository.getCurrencies()
 
 }
