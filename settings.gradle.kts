@@ -21,4 +21,8 @@ dependencyResolutionManagement {
 
 rootProject.name = "MobileUpTestTask"
 include(":app")
- 
+include(":presentation:components")
+include(":presentation:navigation")
+include(":data")
+include(":domain")
+include(":presentation:screens")
