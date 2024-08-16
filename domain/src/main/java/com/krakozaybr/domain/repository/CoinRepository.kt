@@ -10,6 +10,6 @@ interface CoinRepository {
 
     suspend fun getCoins(): Resource<ImmutableList<CoinInfo>, FailureReason>
 
-    suspend fun getCoinDetails(): Resource<CoinDetails, FailureReason>
+    suspend fun getCoinDetails(id: String): Resource<CoinDetails, FailureReason>
 
 }
