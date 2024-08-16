@@ -6,10 +6,10 @@
 ## Декомпозиция задачи:
 Глобально задачу можно разделить на работу по нескольким направлениям:
 - Domain layer (25m)
-- Data layer
+- Data layer (120m)
 - Presentation layer:
   - Navigation and logic (225m)
-  - Screens and components
+  - Screens (100m) and components (230m)
 
 ### Domain
 Начнём с domain слоя, т.к. от него зависят все остальные:
