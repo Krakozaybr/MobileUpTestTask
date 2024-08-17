@@ -3,7 +3,6 @@ package com.krakozaybr.navigation.root
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
 import com.krakozaybr.navigation.coin_list_screen.CoinListScreenComponent
-import com.krakozaybr.navigation.coin_list_screen.children.coin_list.CoinListComponent
 import com.krakozaybr.navigation.details_screen.CoinDetailsScreenComponent
 
 interface RootComponent {

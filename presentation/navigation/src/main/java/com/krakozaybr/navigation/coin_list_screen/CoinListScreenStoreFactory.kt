@@ -70,7 +70,7 @@ internal class CoinListScreenStoreFactory(
                 coinState = State.CoinState.Loading,
                 currencyState = State.CurrencyState.Loading
             ),
-            bootstrapper = SimpleBootstrapper(),
+            bootstrapper = SimpleBootstrapper(Action.StartLoading),
             executorFactory = ::ExecutorImpl,
             reducer = ReducerImpl
         ) {}
@@ -108,7 +108,9 @@ internal class CoinListScreenStoreFactory(
 
         suspend fun startLoading() {
             getCurrencyListUseCase().collectLatest {
-                if (it is Resource.Failure) {
+                it.onSuccess { data ->
+                    dispatch(Msg.CurrencyLoaded(data))
+                }.onFailure {
                     dispatch(Msg.CurrencyLoadFailed)
                 }
                 // We can load coins only if selectedCurrency is available
