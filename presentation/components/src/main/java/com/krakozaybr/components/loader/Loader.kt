@@ -29,7 +29,7 @@ fun Loader(
             durationMillis = 1200
         )
     ),
-    color: Color = AppTheme.extraColors.loader
+    color: Color = AppTheme.extraColors.main
 ) {
     val transition = rememberInfiniteTransition(
         label = "Loader transition"

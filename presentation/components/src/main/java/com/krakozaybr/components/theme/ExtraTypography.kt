@@ -19,5 +19,17 @@ data class ExtraTypography(
         fontSize = 20.sp,
         fontWeight = FontWeight.Medium,
         letterSpacing = 0.15.sp
-    )
+    ),
+    val mediumText: TextStyle = TextStyle(
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp
+    ),
+    val capsButton: TextStyle = TextStyle(
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
+        letterSpacing = 0.75.sp,
+        lineHeight = 16.sp,
+        fontSize = 14.sp
+    ),
 )

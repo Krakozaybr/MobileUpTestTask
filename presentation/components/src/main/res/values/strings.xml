@@ -3,4 +3,6 @@
     <string name="coin_list">Список криптовалют</string>
     <string name="go_back">Назад</string>
     <string name="error">Ошибка</string>
+    <string name="error_text">Произошла какая-то ошибка :(\nПопробуем снова?</string>
+    <string name="caps_try">ПОПРОБОВАТЬ</string>
 </resources>
