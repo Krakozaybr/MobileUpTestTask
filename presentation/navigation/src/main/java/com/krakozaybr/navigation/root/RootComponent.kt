@@ -2,8 +2,9 @@ package com.krakozaybr.navigation.root
 
 import com.arkivanov.decompose.router.stack.ChildStack
 import com.arkivanov.decompose.value.Value
-import com.krakozaybr.navigation.coin_list.CoinListComponent
-import com.krakozaybr.navigation.details.CoinDetailsComponent
+import com.krakozaybr.navigation.coin_list_screen.CoinListScreenComponent
+import com.krakozaybr.navigation.coin_list_screen.children.coin_list.CoinListComponent
+import com.krakozaybr.navigation.details_screen.CoinDetailsScreenComponent
 
 interface RootComponent {
 
@@ -11,9 +12,9 @@ interface RootComponent {
 
     sealed interface Child {
 
-        data class CoinList(val component: CoinListComponent) : Child
+        data class CoinList(val component: CoinListScreenComponent) : Child
 
-        data class CoinDetails(val component: CoinDetailsComponent) : Child
+        data class CoinDetails(val component: CoinDetailsScreenComponent) : Child
 
     }
 

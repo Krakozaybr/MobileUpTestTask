@@ -1,4 +1,4 @@
-package com.krakozaybr.navigation.currency_list
+package com.krakozaybr.navigation.coin_list_screen.children.currency_list
 
 import com.arkivanov.mvikotlin.core.store.Reducer
 import com.arkivanov.mvikotlin.core.store.SimpleBootstrapper
@@ -9,8 +9,8 @@ import com.krakozaybr.domain.model.Currency
 import com.krakozaybr.domain.resource.onFailure
 import com.krakozaybr.domain.resource.onSuccess
 import com.krakozaybr.domain.use_case.GetCurrencyListUseCase
-import com.krakozaybr.navigation.currency_list.CurrencyListStore.Intent
-import com.krakozaybr.navigation.currency_list.CurrencyListStore.Label
+import com.krakozaybr.navigation.coin_list_screen.children.currency_list.CurrencyListStore.Intent
+import com.krakozaybr.navigation.coin_list_screen.children.currency_list.CurrencyListStore.Label
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.launch
 

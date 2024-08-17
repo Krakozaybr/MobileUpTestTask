@@ -1,4 +1,4 @@
-package com.krakozaybr.navigation.currency_list
+package com.krakozaybr.navigation.coin_list_screen.children.currency_list
 
 import com.krakozaybr.domain.model.Currency
 import com.krakozaybr.domain.repository.CurrencyRepository
