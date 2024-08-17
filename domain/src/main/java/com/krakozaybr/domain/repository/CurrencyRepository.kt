@@ -10,4 +10,6 @@ interface CurrencyRepository {
 
     fun getCurrencies(): Flow<Resource<ImmutableList<Currency>, FailureReason>>
 
+    suspend fun reloadCurrencies(): Resource<Unit, FailureReason>
+
 }
