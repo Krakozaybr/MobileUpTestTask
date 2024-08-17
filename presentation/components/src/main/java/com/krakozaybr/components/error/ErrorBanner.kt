@@ -56,8 +56,8 @@ fun ErrorBanner(
             modifier = Modifier
                 .clip(RoundedCornerShape(4.dp))
                 .background(AppTheme.extraColors.main)
-                .padding(vertical = 13.dp, horizontal = 33.dp)
                 .clickable(onClick = onRetryClick)
+                .padding(vertical = 13.dp, horizontal = 33.dp)
         ) {
             Text(
                 text = stringResource(id = R.string.caps_try),
