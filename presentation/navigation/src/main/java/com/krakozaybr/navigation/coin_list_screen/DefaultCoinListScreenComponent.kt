@@ -1,4 +1,4 @@
-package com.krakozaybr.navigation.coin_list_screen.children.coin_list
+package com.krakozaybr.navigation.coin_list_screen
 
 import com.arkivanov.decompose.ComponentContext
 import com.arkivanov.mvikotlin.core.instancekeeper.getStore
@@ -11,15 +11,14 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 
-class DefaultCoinListComponent internal constructor(
-    private val storeFactory: CoinListStoreFactory,
-    private val onShowDetails: (CoinInfo) -> Unit,
-    currency: Currency,
+class DefaultCoinListScreenComponent internal constructor(
+    private val storeFactory: CoinListScreenStoreFactory,
+    private val showDetails: (CoinInfo) -> Unit,
     componentContext: ComponentContext
-) : CoinListComponent, ComponentContext by componentContext {
+) : CoinListScreenComponent, ComponentContext by componentContext {
 
     private val store = instanceKeeper.getStore {
-        storeFactory.create(currency)
+        storeFactory.create()
     }
 
     private val scope = componentScope()
@@ -31,29 +30,31 @@ class DefaultCoinListComponent internal constructor(
         scope.launch {
             store.labels.collect {
                 when (it) {
-                    is CoinListStore.Label.OpenDetails -> onShowDetails(it.coinInfo)
+                    is CoinListScreenStore.Label.ShowDetails -> showDetails(it.coin)
                 }
             }
         }
     }
 
-    override fun showDetails(coinInfo: CoinInfo) {
-        store.accept(CoinListStore.Intent.OpenDetails(coinInfo))
+    override fun onSelectCurrency(currency: Currency) {
+        store.accept(Intent.ChooseCurrency(currency))
+    }
+
+    override fun onShowDetails(coinInfo: CoinInfo) {
+        store.accept(Intent.ShowDetails(coinInfo))
     }
 
     class Factory internal constructor(
-        private val storeFactory: CoinListStoreFactory,
+        private val storeFactory: CoinListScreenStoreFactory,
     ) {
 
         fun create(
             componentContext: ComponentContext,
-            onShowDetails: (CoinInfo) -> Unit,
-            currency: Currency,
-        ) = DefaultCoinListComponent(
+            showDetails: (CoinInfo) -> Unit,
+        ) = DefaultCoinListScreenComponent(
             componentContext = componentContext,
             storeFactory = storeFactory,
-            onShowDetails = onShowDetails,
-            currency = currency,
+            showDetails = showDetails
         )
 
     }
