@@ -34,4 +34,8 @@ object AppTheme {
         @ReadOnlyComposable
         get() = ExtraTypography()
 
+    val sizes: Sizes
+        @Composable
+        @ReadOnlyComposable
+        get() = Sizes()
 }

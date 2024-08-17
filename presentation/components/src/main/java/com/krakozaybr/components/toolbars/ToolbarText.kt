@@ -16,6 +16,7 @@ fun ToolbarText(
 ) {
     Text(
         text = text,
+        color = AppTheme.extraColors.toolbarTitle,
         style = AppTheme.extraTypography.toolbarTitle,
         modifier = modifier
     )
