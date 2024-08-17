@@ -7,10 +7,14 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.krakozaybr.domain.model.CoinInfo
 import com.krakozaybr.domain.model.Currency
+import com.krakozaybr.domain.resource.onFailure
+import com.krakozaybr.domain.resource.onSuccess
 import com.krakozaybr.domain.use_case.GetCoinInfoUseCase
+import com.krakozaybr.domain.use_case.GetCoinListUseCase
 import com.krakozaybr.navigation.coin_list_screen.children.coin_list.CoinListStore.Intent
 import com.krakozaybr.navigation.coin_list_screen.children.coin_list.CoinListStore.Label
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.coroutines.launch
 
 sealed interface State {
 
@@ -25,7 +29,6 @@ internal interface CoinListStore : Store<Intent, State, Label> {
 
     sealed interface Intent {
 
-        data class CurrencyChosen(val currency: Currency) : Intent
         data class OpenDetails(val coinInfo: CoinInfo) : Intent
 
     }
@@ -39,15 +42,17 @@ internal interface CoinListStore : Store<Intent, State, Label> {
 
 internal class CoinListStoreFactory(
     private val storeFactory: StoreFactory,
-    private val getCoinInfoUseCase: GetCoinInfoUseCase
+    private val getCoinListUseCase: GetCoinListUseCase
 ) {
 
-    fun create(): CoinListStore =
+    fun create(
+        currency: Currency
+    ): CoinListStore =
         object : CoinListStore, Store<Intent, State, Label> by storeFactory.create(
             name = "CoinListStore",
             initialState = State.Loading,
             bootstrapper = SimpleBootstrapper(Action.StartLoading),
-            executorFactory = CoinListStoreFactory::ExecutorImpl,
+            executorFactory = { ExecutorImpl(currency) },
             reducer = ReducerImpl
         ) {}
 
@@ -62,22 +67,39 @@ internal class CoinListStoreFactory(
 
     }
 
-    private class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
+    private inner class ExecutorImpl(
+        private val currency: Currency
+    ) : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
         override fun executeIntent(intent: Intent) {
             when (intent) {
-                is Intent.CurrencyChosen ->
                 is Intent.OpenDetails -> publish(Label.OpenDetails(intent.coinInfo))
             }
         }
 
         override fun executeAction(action: Action) {
+            when (action) {
+                Action.StartLoading -> scope.launch {
+                    getCoinListUseCase(currency).collect {
+                        it.onSuccess { data ->
+                            dispatch(Msg.LoadSuccess(data))
+                        }.onFailure {
+                            if (state() !is State.LoadSuccess) {
+                                dispatch(Msg.LoadFailed)
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
     private object ReducerImpl : Reducer<State, Msg> {
         override fun State.reduce(msg: Msg): State =
             when (msg) {
-                Msg.LoadFailed -> TODO()
+                Msg.LoadFailed -> if (this !is State.LoadSuccess) {
+                    State.LoadFailed
+                } else this
+                is Msg.LoadSuccess -> State.LoadSuccess(msg.data)
             }
     }
 }
