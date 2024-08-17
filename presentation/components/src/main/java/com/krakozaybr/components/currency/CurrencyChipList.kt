@@ -25,7 +25,7 @@ import kotlinx.collections.immutable.toImmutableList
 
 @Composable
 fun CurrencyChipList(
-    selected: Currency,
+    selected: Currency?,
     onChipClick: (Currency) -> Unit,
     currencyList: ImmutableList<Currency>,
     modifier: Modifier = Modifier,
