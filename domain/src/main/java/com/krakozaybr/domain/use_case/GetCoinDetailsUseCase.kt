@@ -2,7 +2,7 @@ package com.krakozaybr.domain.use_case
 
 import com.krakozaybr.domain.repository.CoinRepository
 
-class GetCoinInfoUseCase(
+class GetCoinDetailsUseCase(
     private val repository: CoinRepository
 ) {
 
