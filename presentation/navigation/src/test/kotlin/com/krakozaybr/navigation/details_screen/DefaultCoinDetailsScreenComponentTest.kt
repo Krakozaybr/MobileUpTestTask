@@ -115,6 +115,7 @@ class DefaultCoinDetailsScreenComponentTest : DecomposeTest {
     fun testComponent(
         goBack: () -> Unit = {},
         id: String = mockCoinInfos[0].id,
+        title: String = mockCoinInfos[0].name,
         coinRepository: CoinRepository = MockCoinRepository(mockCoinInfos),
         currencyRepository: CurrencyRepository = MockCurrencyRepository(mockCurrencies)
     ): DefaultCoinDetailsScreenComponent {
@@ -129,7 +130,8 @@ class DefaultCoinDetailsScreenComponentTest : DecomposeTest {
             koin.get<DefaultCoinDetailsScreenComponent.Factory>().create(
                 componentContext = it,
                 goBack = goBack,
-                id = id
+                id = id,
+                title = title
             )
         }
     }

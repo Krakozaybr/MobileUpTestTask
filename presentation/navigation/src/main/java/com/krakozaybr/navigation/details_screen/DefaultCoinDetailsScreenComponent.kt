@@ -6,12 +6,16 @@ import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.krakozaybr.navigation.extensions.componentScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class DefaultCoinDetailsScreenComponent internal constructor(
     private val storeFactory: CoinDetailsScreenStoreFactory,
     private val id: String,
+    private val title: String,
     private val goBack: () -> Unit,
     componentContext: ComponentContext
 ) : CoinDetailsScreenComponent, ComponentContext by componentContext {
@@ -23,7 +27,21 @@ class DefaultCoinDetailsScreenComponent internal constructor(
     private val scope = componentScope()
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val model: StateFlow<State> = store.stateFlow
+    override val model: StateFlow<CoinDetailsScreenComponent.Model> = store.stateFlow
+        .map {
+            CoinDetailsScreenComponent.Model(
+                title = title,
+                state = it,
+            )
+        }
+        .stateIn(
+            scope = scope,
+            started = SharingStarted.Eagerly,
+            initialValue = CoinDetailsScreenComponent.Model(
+                title = title,
+                state = store.state
+            )
+        )
 
     init {
         scope.launch {
@@ -50,12 +68,14 @@ class DefaultCoinDetailsScreenComponent internal constructor(
         fun create(
             componentContext: ComponentContext,
             id: String,
+            title: String,
             goBack: () -> Unit,
         ) = DefaultCoinDetailsScreenComponent(
             componentContext = componentContext,
             storeFactory = storeFactory,
             id = id,
-            goBack = goBack
+            goBack = goBack,
+            title = title
         )
 
     }

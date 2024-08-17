@@ -25,7 +25,7 @@ class DefaultRootComponent internal constructor(
         initialConfiguration = Config.CoinList,
     ) { cfg, ctx ->
         when (cfg) {
-            is Config.CoinDetails -> createCoinDetails(ctx, cfg.id)
+            is Config.CoinDetails -> createCoinDetails(ctx, cfg.id, cfg.title)
             Config.CoinList -> createCoinList(ctx)
         }
     }
@@ -34,21 +34,25 @@ class DefaultRootComponent internal constructor(
         coinListScreenFactory.create(
             componentContext = ctx,
             showDetails = {
-                navigation.bringToFront(Config.CoinDetails(it.id))
+                navigation.bringToFront(Config.CoinDetails(it.id, it.name))
             }
         )
     )
 
-    private fun createCoinDetails(ctx: ComponentContext, id: String) =
-        RootComponent.Child.CoinDetails(
-            coinDetailsScreenFactory.create(
-                componentContext = ctx,
-                id = id,
-                goBack = {
-                    navigation.bringToFront(Config.CoinList)
-                },
-            )
+    private fun createCoinDetails(
+        ctx: ComponentContext,
+        id: String,
+        title: String
+    ) = RootComponent.Child.CoinDetails(
+        coinDetailsScreenFactory.create(
+            componentContext = ctx,
+            id = id,
+            title = title,
+            goBack = {
+                navigation.bringToFront(Config.CoinList)
+            },
         )
+    )
 
     @Serializable
     private sealed interface Config {
@@ -57,7 +61,7 @@ class DefaultRootComponent internal constructor(
         data object CoinList : Config
 
         @Serializable
-        data class CoinDetails(val id: String) : Config
+        data class CoinDetails(val id: String, val title: String) : Config
 
     }
 
