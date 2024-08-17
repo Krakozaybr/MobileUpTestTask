@@ -14,12 +14,12 @@ fun <D1, D2, E1 : E2, E2 : FailureReason> Resource<D1, E1>.mapData(
     is Resource.Success -> Resource.Success(convert(data))
 }
 
-fun <D, E : FailureReason> Resource<D, E>.onFailure(action: (E) -> Unit): Resource<D, E> {
+inline fun <D, E : FailureReason> Resource<D, E>.onFailure(action: (E) -> Unit): Resource<D, E> {
     if (this is Resource.Failure) action(error)
     return this
 }
 
-fun <D, E : FailureReason> Resource<D, E>.onSuccess(action: (D) -> Unit): Resource<D, E> {
+inline fun <D, E : FailureReason> Resource<D, E>.onSuccess(action: (D) -> Unit): Resource<D, E> {
     if (this is Resource.Success) action(data)
     return this
 }
