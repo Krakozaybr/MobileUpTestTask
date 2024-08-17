@@ -2,4 +2,5 @@
 <resources>
     <string name="coin_list">Список криптовалют</string>
     <string name="go_back">Назад</string>
+    <string name="error">Ошибка</string>
 </resources>
