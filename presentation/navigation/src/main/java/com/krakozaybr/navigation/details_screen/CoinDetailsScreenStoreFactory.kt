@@ -9,6 +9,7 @@ import com.krakozaybr.domain.model.CoinDetails
 import com.krakozaybr.domain.resource.onFailure
 import com.krakozaybr.domain.resource.onSuccess
 import com.krakozaybr.domain.use_case.GetCoinDetailsUseCase
+import com.krakozaybr.domain.use_case.ReloadCoinDetailsUseCase
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -35,7 +36,8 @@ internal interface CoinDetailsScreenStore : Store<Intent, State, Label>
 
 internal class CoinDetailsScreenStoreFactory(
     private val storeFactory: StoreFactory,
-    private val getCoinDetailsUseCase: GetCoinDetailsUseCase
+    private val getCoinDetailsUseCase: GetCoinDetailsUseCase,
+    private val reloadCoinDetailsUseCase: ReloadCoinDetailsUseCase
 ) {
 
     fun create(
@@ -67,8 +69,11 @@ internal class CoinDetailsScreenStoreFactory(
         override fun executeIntent(intent: Intent) {
             when (intent) {
                 Intent.GoBack -> publish(Label.GoBack)
-                Intent.RetryLoading -> scope.launch {
-                    // TODO
+                Intent.RetryLoading -> {
+                    dispatch(Msg.RetryLoad)
+                    scope.launch {
+                        reloadCoinDetailsUseCase(id)
+                    }
                 }
             }
         }
