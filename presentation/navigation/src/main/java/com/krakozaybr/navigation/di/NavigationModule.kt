@@ -2,10 +2,8 @@ package com.krakozaybr.navigation.di
 
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.main.store.DefaultStoreFactory
-import com.krakozaybr.navigation.coin_list_screen.children.coin_list.CoinListStoreFactory
-import com.krakozaybr.navigation.coin_list_screen.children.coin_list.DefaultCoinListComponent
-import com.krakozaybr.navigation.coin_list_screen.children.currency_list.CurrencyListStoreFactory
-import com.krakozaybr.navigation.coin_list_screen.children.currency_list.DefaultCurrencyListComponent
+import com.krakozaybr.navigation.coin_list_screen.CoinListScreenStoreFactory
+import com.krakozaybr.navigation.coin_list_screen.DefaultCoinListScreenComponent
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -13,9 +11,6 @@ import org.koin.dsl.module
 val navigationModule = module {
     factoryOf<StoreFactory>(::DefaultStoreFactory)
 
-    factoryOf(::CurrencyListStoreFactory)
-    factoryOf(DefaultCurrencyListComponent::Factory)
-
-    factoryOf(::CoinListStoreFactory)
-    factoryOf(DefaultCoinListComponent::Factory)
+    factoryOf(::CoinListScreenStoreFactory)
+    factoryOf(DefaultCoinListScreenComponent::Factory)
 }
