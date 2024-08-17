@@ -36,7 +36,7 @@ fun CoinDetailsToolbar(
 
 @Preview
 @Composable
-private fun ToolbarTextPreview() {
+private fun CoinDetailsToolbarPreview() {
     AppTheme {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CoinDetailsToolbar(

@@ -5,9 +5,9 @@ import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.krakozaybr.components.theme.AppTheme
@@ -19,11 +19,16 @@ fun AppToolbar(
     shadowElevation: Dp = AppTheme.sizes.toolbarShadowElevation,
     content: @Composable BoxScope.() -> Unit
 ) {
-    Box(
-        content = content,
+    Surface(
+        content = {
+            Box(
+                content = content,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(paddingValues)
+            )
+        },
+        shadowElevation = shadowElevation,
         modifier = modifier
-            .fillMaxWidth()
-            .shadow(shadowElevation)
-            .padding(paddingValues)
     )
 }

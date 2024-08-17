@@ -27,7 +27,7 @@ fun GoBackToolbarIcon(
 
 @Preview
 @Composable
-private fun ToolbarTextPreview() {
+private fun GoBackToolbarIconPreview() {
     AppTheme {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             GoBackToolbarIcon(
