@@ -41,6 +41,7 @@ android {
 dependencies {
 
     implementation(project(":presentation:navigation"))
+    implementation(project(":domain"))
     implementation(project(":presentation:components"))
 
     implementation(libs.decompose.core)
