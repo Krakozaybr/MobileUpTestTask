@@ -6,7 +6,6 @@ import com.arkivanov.mvikotlin.extensions.coroutines.labels
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import com.krakozaybr.domain.model.CoinInfo
 import com.krakozaybr.domain.model.Currency
-import com.krakozaybr.navigation.coin_list_screen.children.currency_list.CurrencyListStore
 import com.krakozaybr.navigation.extensions.componentScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.StateFlow
