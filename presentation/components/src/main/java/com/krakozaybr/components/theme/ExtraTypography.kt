@@ -9,7 +9,11 @@ import com.krakozaybr.components.R
 
 val Roboto = FontFamily(
     Font(
-        resId = R.font.roboto,
+        resId = R.font.roboto_medium,
+        weight = FontWeight.Medium
+    ),
+    Font(
+        resId = R.font.roboto_semibold,
     ),
 )
 
