@@ -32,4 +32,11 @@ data class ExtraTypography(
         lineHeight = 16.sp,
         fontSize = 14.sp
     ),
+    val chip: TextStyle = TextStyle(
+        fontFamily = Roboto,
+        fontWeight = FontWeight.Normal,
+        letterSpacing = 0.25.sp,
+        lineHeight = 20.sp,
+        fontSize = 14.sp
+    ),
 )
