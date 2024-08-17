@@ -13,4 +13,6 @@ interface CoinListScreenComponent {
 
     fun onShowDetails(coinInfo: CoinInfo)
 
+    fun reloadAll()
+
 }

@@ -36,6 +36,10 @@ class DefaultCoinListScreenComponent internal constructor(
         }
     }
 
+    override fun reloadAll() {
+        store.accept(Intent.ReloadAll)
+    }
+
     override fun onSelectCurrency(currency: Currency) {
         store.accept(Intent.ChooseCurrency(currency))
     }

@@ -12,6 +12,8 @@ import com.krakozaybr.domain.resource.onFailure
 import com.krakozaybr.domain.resource.onSuccess
 import com.krakozaybr.domain.use_case.GetCoinListUseCase
 import com.krakozaybr.domain.use_case.GetCurrencyListUseCase
+import com.krakozaybr.domain.use_case.ReloadCoinsUseCase
+import com.krakozaybr.domain.use_case.ReloadCurrenciesUseCase
 import com.krakozaybr.navigation.coin_list_screen.CoinListScreenStore.Label
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.coroutines.flow.collectLatest
@@ -44,6 +46,7 @@ internal sealed interface Intent {
 
     data class ChooseCurrency(val currency: Currency) : Intent
     data class ShowDetails(val coin: CoinInfo) : Intent
+    data object ReloadAll : Intent
 
 }
 
@@ -60,7 +63,9 @@ internal interface CoinListScreenStore : Store<Intent, State, Label> {
 internal class CoinListScreenStoreFactory(
     private val storeFactory: StoreFactory,
     private val getCoinListUseCase: GetCoinListUseCase,
-    private val getCurrencyListUseCase: GetCurrencyListUseCase
+    private val getCurrencyListUseCase: GetCurrencyListUseCase,
+    private val reloadCoinsUseCase: ReloadCoinsUseCase,
+    private val reloadCurrenciesUseCase: ReloadCurrenciesUseCase
 ) {
 
     fun create(): CoinListScreenStore =
@@ -95,6 +100,15 @@ internal class CoinListScreenStoreFactory(
             when (intent) {
                 is Intent.ChooseCurrency -> dispatch(Msg.CurrencyChanged(intent.currency))
                 is Intent.ShowDetails -> publish(Label.ShowDetails(intent.coin))
+                Intent.ReloadAll -> scope.launch {
+                    if (state().currencyState is State.CurrencyState.LoadFailed) {
+                        reloadCurrenciesUseCase().onSuccess {
+                            reloadCoinsUseCase()
+                        }
+                    } else {
+                        reloadCoinsUseCase()
+                    }
+                }
             }
         }
 
