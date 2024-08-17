@@ -6,6 +6,7 @@ import com.krakozaybr.navigation.coin_list_screen.CoinListScreenStoreFactory
 import com.krakozaybr.navigation.coin_list_screen.DefaultCoinListScreenComponent
 import com.krakozaybr.navigation.details_screen.CoinDetailsScreenStoreFactory
 import com.krakozaybr.navigation.details_screen.DefaultCoinDetailsScreenComponent
+import com.krakozaybr.navigation.root.DefaultRootComponent
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.module
 
@@ -18,4 +19,6 @@ val navigationModule = module {
 
     factoryOf(::CoinDetailsScreenStoreFactory)
     factoryOf(DefaultCoinDetailsScreenComponent::Factory)
+
+    factoryOf(::DefaultRootComponent)
 }
