@@ -10,6 +10,7 @@ import com.krakozaybr.navigation.mock.BrokenCoinRepository
 import com.krakozaybr.navigation.mock.BrokenCurrencyRepository
 import com.krakozaybr.navigation.mock.MockCoinRepository
 import com.krakozaybr.navigation.mock.MockCurrencyRepository
+import com.krakozaybr.navigation.mock.NeedToReloadCoinRepository
 import com.krakozaybr.navigation.mock.mockCoinInfos
 import com.krakozaybr.navigation.mock.mockCurrencies
 import com.krakozaybr.navigation.startTestKoin
@@ -131,6 +132,38 @@ class DefaultCoinListScreenComponentTest : DecomposeTest {
         assertEquals(
             expectedCount,
             i
+        )
+
+    }
+
+    @Test
+    fun checkReloadWorks() = runBlocking {
+
+        val needToReload = 12
+        val expectedState = State(
+            currencyState = State.CurrencyState.LoadSuccess(mockCurrencies.toImmutableList()),
+            coinState = State.CoinState.LoadSuccess(mockCoinInfos.toImmutableList()),
+            selectedCurrency = mockCurrencies.first()
+        )
+
+        val component = testComponent(
+            coinRepository = NeedToReloadCoinRepository(
+                data = mockCoinInfos,
+                reloadsToWork = needToReload,
+                error = DataError
+            )
+        )
+
+        waitStore()
+
+        repeat(needToReload) {
+            component.reloadAll()
+            waitStore()
+        }
+
+        assertEquals(
+            expectedState,
+            component.model.value
         )
 
     }

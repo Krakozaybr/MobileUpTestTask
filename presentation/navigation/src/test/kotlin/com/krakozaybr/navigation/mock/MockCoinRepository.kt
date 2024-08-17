@@ -23,14 +23,17 @@ class MockCoinRepository(
         return data.first { it.id == id }.let {
             flowOf(
                 Resource.Success(
-                    CoinDetails(
-                        id = it.id,
-                        imageLink = it.imageLink,
-                        description = "Details description",
-                        categories = persistentListOf("Category 1", "Category 2")
-                    )
+                    data.first { it.id == id }.mockMap()
                 )
             )
         }
+    }
+
+    override suspend fun reloadCoins(): Resource<Unit, FailureReason> {
+        return Resource.Success(Unit)
+    }
+
+    override suspend fun reloadCoinDetails(id: String): Resource<Unit, FailureReason> {
+        return Resource.Success(Unit)
     }
 }

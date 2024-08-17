@@ -8,7 +8,7 @@ import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.krakozaybr.domain.model.CoinDetails
 import com.krakozaybr.domain.resource.onFailure
 import com.krakozaybr.domain.resource.onSuccess
-import com.krakozaybr.domain.use_case.GetCoinInfoUseCase
+import com.krakozaybr.domain.use_case.GetCoinDetailsUseCase
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -35,7 +35,7 @@ internal interface CoinDetailsScreenStore : Store<Intent, State, Label>
 
 internal class CoinDetailsScreenStoreFactory(
     private val storeFactory: StoreFactory,
-    private val getCoinDetailsUseCase: GetCoinInfoUseCase
+    private val getCoinDetailsUseCase: GetCoinDetailsUseCase
 ) {
 
     fun create(

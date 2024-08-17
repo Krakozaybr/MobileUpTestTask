@@ -17,4 +17,8 @@ class MockCurrencyRepository(
             Resource.Success(currencies.toImmutableList())
         )
     }
+
+    override suspend fun reloadCurrencies(): Resource<Unit, FailureReason> {
+        return Resource.Success(Unit)
+    }
 }

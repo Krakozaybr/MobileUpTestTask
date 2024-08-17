@@ -9,9 +9,13 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flowOf
 
 class BrokenCurrencyRepository(
-    val error: FailureReason
+    val error: FailureReason,
 ) : CurrencyRepository {
     override fun getCurrencies(): Flow<Resource<ImmutableList<Currency>, FailureReason>> {
         return flowOf(Resource.Failure(error))
+    }
+
+    override suspend fun reloadCurrencies(): Resource<Unit, FailureReason> {
+        return Resource.Failure(error)
     }
 }
