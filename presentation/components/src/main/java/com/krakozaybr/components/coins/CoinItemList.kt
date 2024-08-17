@@ -69,7 +69,7 @@ private fun CoinItemListPreview() {
                         id = "id$it",
                         priceChangePercentage = Math.pow(-1.0, it.toDouble()).toFloat() * it * 2,
                         name = "$it name",
-                        imageLink = "https://t4.ftcdn.net/jpg/03/16/24/49/360_F_316244961_4Kch7qlXUf8accn4wXUK4vA4ZfPMmpPh.jpg",
+                        imageLink = "https://media.licdn.com/dms/image/v2/C510BAQGyuGalyYxfXQ/company-logo_200_200/company-logo_200_200/0/1631334696178?e=2147483647&v=beta&t=5TmFyg4zbmhC3J_ByYHr6aYCmFD8ZmNcpoRT8RNs2Kw",
                         price = it * 1000f,
                         symbol = "${it}SB"
                     )

@@ -6,17 +6,20 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.krakozaybr.components.R
 import com.krakozaybr.components.theme.AppTheme
 import com.krakozaybr.components.theme.Roboto
@@ -138,8 +141,12 @@ private fun CoinImage(
     modifier: Modifier = Modifier
 ) {
     AsyncImage(
-        modifier = modifier,
-        model = imageLink,
+        modifier = modifier.aspectRatio(1f),
+        model = ImageRequest.Builder(LocalContext.current)
+            .data(imageLink)
+            .crossfade(true)
+            .placeholder(R.drawable.placeholder)
+            .build(),
         contentDescription = contentDescription
     )
 }
