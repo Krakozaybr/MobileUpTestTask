@@ -1,6 +1,7 @@
 package com.krakozaybr.data.network
 
 import com.krakozaybr.domain.resource.DataError
+import com.krakozaybr.domain.resource.NetworkResource
 import com.krakozaybr.domain.resource.Resource
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
@@ -12,9 +13,9 @@ import java.io.IOException
 
 internal class ResourceCall<D>(
     private val delegate: Call<D>
-) : Call<Resource<D, DataError.Network>> {
+) : Call<NetworkResource<D>> {
     
-    override fun enqueue(callback: Callback<Resource<D, DataError.Network>>) {
+    override fun enqueue(callback: Callback<NetworkResource<D>>) {
         delegate.enqueue(object : Callback<D> {
             override fun onResponse(call: Call<D>, response: Response<D>) {
                 callback.onResponse(this@ResourceCall, responseSuccess(response))
@@ -27,7 +28,7 @@ internal class ResourceCall<D>(
         })
     }
 
-    override fun execute(): Response<Resource<D, DataError.Network>> {
+    override fun execute(): Response<NetworkResource<D>> {
         return try {
             val resp = delegate.execute()
             responseSuccess(resp)
@@ -38,7 +39,7 @@ internal class ResourceCall<D>(
 
     private fun responseFailure(
         t: Throwable
-    ): Response<Resource<D, DataError.Network>> {
+    ): Response<NetworkResource<D>> {
         val error = when (t) {
             is IOException -> DataError.Network.NO_INTERNET
             is SerializationException -> DataError.Network.SERIALIZATION
@@ -51,7 +52,7 @@ internal class ResourceCall<D>(
 
     private fun responseSuccess(
         response: Response<D>
-    ): Response<Resource<D, DataError.Network>> {
+    ): Response<NetworkResource<D>> {
         val body = response.body()
 
         return Response.success(
