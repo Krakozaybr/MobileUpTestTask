@@ -24,7 +24,7 @@ class DefaultCoinDetailsScreenComponentTest : DecomposeTest {
     fun checkIfRepositoryIsBroken() = runBlocking {
 
         val expectedState = State.LoadFailed
-        val expectedError = DataError
+        val expectedError = DataError.Network.NO_INTERNET
 
         val component = testComponent(
             coinRepository = BrokenCoinRepository(expectedError)
@@ -94,7 +94,7 @@ class DefaultCoinDetailsScreenComponentTest : DecomposeTest {
             coinRepository = NeedToReloadCoinRepository(
                 data = mockCoinInfos,
                 reloadsToWork = needToReload,
-                error = DataError
+                error = DataError.Network.NO_INTERNET
             )
         )
 

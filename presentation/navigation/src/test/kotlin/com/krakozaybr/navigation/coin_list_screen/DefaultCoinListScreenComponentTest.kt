@@ -26,7 +26,7 @@ class DefaultCoinListScreenComponentTest : DecomposeTest {
     @Test
     fun checkIfCurrencyRepositoryIsBroken() = runBlocking {
 
-        val expectedError = DataError
+        val expectedError = DataError.Network.SERVER_ERROR
         val expectedState = State(
             currencyState = State.CurrencyState.LoadFailed,
             coinState = State.CoinState.LoadFailed
@@ -48,7 +48,7 @@ class DefaultCoinListScreenComponentTest : DecomposeTest {
     @Test
     fun checkIfNoCurrenciesProvided() = runBlocking {
 
-        val expectedError = DataError
+        val expectedError = DataError.Network.SERVER_ERROR
         val expectedState = State(
             currencyState = State.CurrencyState.LoadFailed,
             coinState = State.CoinState.LoadFailed
@@ -70,7 +70,7 @@ class DefaultCoinListScreenComponentTest : DecomposeTest {
     @Test
     fun checkIfCoinRepositoryIsBroken() = runBlocking {
 
-        val expectedError = DataError
+        val expectedError = DataError.Network.SERVER_ERROR
         val expectedState = State(
             currencyState = State.CurrencyState.LoadSuccess(mockCurrencies.toImmutableList()),
             coinState = State.CoinState.LoadFailed,
@@ -150,7 +150,7 @@ class DefaultCoinListScreenComponentTest : DecomposeTest {
             coinRepository = NeedToReloadCoinRepository(
                 data = mockCoinInfos,
                 reloadsToWork = needToReload,
-                error = DataError
+                error = DataError.Network.SERVER_ERROR
             )
         )
 
