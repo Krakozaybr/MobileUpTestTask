@@ -22,8 +22,8 @@ class BrokenCoinRepository(
         return flowOf(Resource.Failure(error))
     }
 
-    override suspend fun reloadCoins(): Resource<Unit, FailureReason> {
-        return Resource.Failure(error)
+    override suspend fun reloadCoins(): Map<Currency, Resource<Unit, FailureReason>> {
+        return mockCurrencies.associateWith { Resource.Failure(error) }
     }
 
     override suspend fun reloadCoinDetails(id: String): Resource<Unit, FailureReason> {

@@ -38,15 +38,15 @@ class NeedToReloadCoinRepository(
             }
     }
 
-    override suspend fun reloadCoins(): Resource<Unit, FailureReason> {
+    override suspend fun reloadCoins(): Map<Currency, Resource<Unit, FailureReason>> {
         attempts++
         if (attempts == reloadsToWork) {
             dataFlow.value = Resource.Success(data.toImmutableList())
         }
         if (attempts >= reloadsToWork) {
-            return Resource.Success(Unit)
+            return mockCurrencies.associateWith { Resource.Success(Unit) }
         }
-        return Resource.Failure(error)
+        return mockCurrencies.associateWith { Resource.Failure(error) }
     }
 
     override suspend fun reloadCoinDetails(id: String): Resource<Unit, FailureReason> {
