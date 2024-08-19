@@ -1,4 +1,4 @@
-package extensions
+package com.krakozaybr.components.extensions
 
 import android.graphics.BlurMaskFilter
 import androidx.compose.ui.Modifier
