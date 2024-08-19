@@ -23,3 +23,8 @@ inline fun <D, E : FailureReason> Resource<D, E>.onSuccess(action: (D) -> Unit):
     if (this is Resource.Success) action(data)
     return this
 }
+
+fun <E : FailureReason> success() = Resource.Success<Unit, E>(Unit)
+fun <D, E : FailureReason> success(data: D) = Resource.Success<D, E>(data)
+
+fun <D, E : FailureReason> failure(error: E) = Resource.Failure<D, E>(error)

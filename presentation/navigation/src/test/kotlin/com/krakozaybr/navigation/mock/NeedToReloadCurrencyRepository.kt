@@ -1,10 +1,11 @@
 package com.krakozaybr.navigation.mock
 
-import com.krakozaybr.domain.model.CoinInfo
 import com.krakozaybr.domain.model.Currency
 import com.krakozaybr.domain.repository.CurrencyRepository
 import com.krakozaybr.domain.resource.FailureReason
-import com.krakozaybr.domain.resource.Resource
+import com.krakozaybr.domain.resource.SimpleResource
+import com.krakozaybr.domain.resource.failure
+import com.krakozaybr.domain.resource.success
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -20,20 +21,20 @@ class NeedToReloadCurrencyRepository(
     private var attempts = 0
 
     private val dataFlow =
-        MutableStateFlow<Resource<ImmutableList<Currency>, FailureReason>>(Resource.Failure(error))
+        MutableStateFlow<SimpleResource<ImmutableList<Currency>>>(failure(error))
 
-    override fun getCurrencies(): Flow<Resource<ImmutableList<Currency>, FailureReason>> {
+    override fun getCurrencies(): Flow<SimpleResource<ImmutableList<Currency>>> {
         return dataFlow.asStateFlow()
     }
 
-    override suspend fun reloadCurrencies(): Resource<Unit, FailureReason> {
+    override suspend fun reloadCurrencies(): SimpleResource<Unit> {
         attempts++
         if (attempts == reloadsToWork) {
-            dataFlow.value = Resource.Success(data.toImmutableList())
+            dataFlow.value = success(data.toImmutableList())
         }
         if (attempts >= reloadsToWork) {
-            return Resource.Success(Unit)
+            return success(Unit)
         }
-        return Resource.Failure(error)
+        return failure(error)
     }
 }

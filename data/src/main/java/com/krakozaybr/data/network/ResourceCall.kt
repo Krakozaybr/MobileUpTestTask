@@ -3,6 +3,8 @@ package com.krakozaybr.data.network
 import com.krakozaybr.domain.resource.DataError
 import com.krakozaybr.domain.resource.NetworkResource
 import com.krakozaybr.domain.resource.Resource
+import com.krakozaybr.domain.resource.failure
+import com.krakozaybr.domain.resource.success
 import kotlinx.serialization.SerializationException
 import okhttp3.Request
 import okio.Timeout
@@ -46,7 +48,7 @@ internal class ResourceCall<D>(
             else -> DataError.Network.UNKNOWN
         }
         return Response.success(
-            Resource.Failure(error)
+            failure(error)
         )
     }
 
@@ -57,11 +59,11 @@ internal class ResourceCall<D>(
 
         return Response.success(
             if (body == null) {
-                Resource.Failure(DataError.Network.PAYLOAD_EMPTY)
+                failure(DataError.Network.PAYLOAD_EMPTY)
             } else if (response.isSuccessful) {
-                Resource.Success(body)
+                success(body)
             } else {
-                Resource.Failure(
+                failure(
                     when (response.code()) {
                         408 -> DataError.Network.REQUEST_TIMEOUT
                         429 -> DataError.Network.REQUEST_TIMEOUT

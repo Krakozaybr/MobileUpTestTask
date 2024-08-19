@@ -5,8 +5,10 @@ import com.krakozaybr.domain.model.CoinInfo
 import com.krakozaybr.domain.model.Currency
 import com.krakozaybr.domain.repository.CoinRepository
 import com.krakozaybr.domain.resource.FailureReason
-import com.krakozaybr.domain.resource.Resource
+import com.krakozaybr.domain.resource.SimpleResource
+import com.krakozaybr.domain.resource.failure
 import com.krakozaybr.domain.resource.mapData
+import com.krakozaybr.domain.resource.success
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -23,13 +25,13 @@ class NeedToReloadCoinRepository(
     private var attempts = 0
 
     private val dataFlow =
-        MutableStateFlow<Resource<ImmutableList<CoinInfo>, FailureReason>>(Resource.Failure(error))
+        MutableStateFlow<SimpleResource<ImmutableList<CoinInfo>>>(failure(error))
 
-    override fun getCoins(currency: Currency): Flow<Resource<ImmutableList<CoinInfo>, FailureReason>> {
+    override fun getCoins(currency: Currency): Flow<SimpleResource<ImmutableList<CoinInfo>>> {
         return dataFlow.asStateFlow()
     }
 
-    override fun getCoinDetails(id: String): Flow<Resource<CoinDetails, FailureReason>> {
+    override fun getCoinDetails(id: String): Flow<SimpleResource<CoinDetails>> {
         return dataFlow
             .map {
                 it.mapData { res ->
@@ -38,25 +40,25 @@ class NeedToReloadCoinRepository(
             }
     }
 
-    override suspend fun reloadCoins(currency: Currency): Resource<Unit, FailureReason> {
+    override suspend fun reloadCoins(currency: Currency): SimpleResource<Unit> {
         attempts++
         if (attempts == reloadsToWork) {
-            dataFlow.value = Resource.Success(data.toImmutableList())
+            dataFlow.value = success(data.toImmutableList())
         }
         if (attempts >= reloadsToWork) {
-            return Resource.Success(Unit)
+            return success(Unit)
         }
-        return Resource.Failure(error)
+        return failure(error)
     }
 
-    override suspend fun reloadCoinDetails(id: String): Resource<Unit, FailureReason> {
+    override suspend fun reloadCoinDetails(id: String): SimpleResource<Unit> {
         attempts++
         if (attempts == reloadsToWork) {
-            dataFlow.value = Resource.Success(data.toImmutableList())
+            dataFlow.value = success(data.toImmutableList())
         }
         if (attempts >= reloadsToWork) {
-            return Resource.Success(Unit)
+            return success(Unit)
         }
-        return Resource.Failure(error)
+        return failure(error)
     }
 }

@@ -9,6 +9,9 @@ import com.krakozaybr.domain.resource.DataError
 import com.krakozaybr.domain.resource.FailureReason
 import com.krakozaybr.domain.resource.NetworkResource
 import com.krakozaybr.domain.resource.Resource
+import com.krakozaybr.domain.resource.SimpleResource
+import com.krakozaybr.domain.resource.failure
+import com.krakozaybr.domain.resource.success
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
@@ -26,7 +29,7 @@ internal class CurrencyRepositoryImpl(
 
     private val lock = ReentrantLock()
 
-    override fun getCurrencies(): Flow<Resource<ImmutableList<Currency>, FailureReason>> {
+    override fun getCurrencies(): Flow<SimpleResource<ImmutableList<Currency>>> {
         return channelFlow {
             if (cache.value == null) lock.withLock {
                 if (cache.value != null) return@withLock
@@ -36,24 +39,24 @@ internal class CurrencyRepositoryImpl(
         }
     }
 
-    override suspend fun reloadCurrencies(): Resource<Unit, FailureReason> {
+    override suspend fun reloadCurrencies(): SimpleResource<Unit> {
         return when (val it = api.supportedCurrencies()) {
             is Resource.Success -> {
                 val list = it.data
                 if (list.isEmpty()) {
                     // We shouldn`t send empty list
-                    Resource.Failure(DataError.Network.PAYLOAD_EMPTY)
+                    failure(DataError.Network.PAYLOAD_EMPTY)
                 } else {
                     cache.value = Resource.Success(
                         list
                             .map { name -> Currency(name.uppercase()) }
                             .toImmutableList()
                     )
-                    Resource.Success(Unit)
+                    success(Unit)
                 }
             }
             is Resource.Failure -> {
-                Resource.Failure(it.error)
+                failure(it.error)
             }
         }
     }
