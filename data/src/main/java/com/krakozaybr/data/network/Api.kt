@@ -12,12 +12,12 @@ import retrofit2.http.Query
 internal interface Api {
 
     @GET("simple/supported_vs_currencies")
-    fun supportedCurrencies(): NetworkResource<List<String>>
+    suspend fun supportedCurrencies(): NetworkResource<List<String>>
 
     @GET("coins/markets")
-    fun getList(@Query("vs_currency") currency: String): NetworkResource<List<CoinInfoDTO>>
+    suspend fun getList(@Query("vs_currency") currency: String): NetworkResource<List<CoinInfoDTO>>
 
     @GET("coins/{id}")
-    fun getDetails(@Path("id") id: String): NetworkResource<CoinDetailsDTO>
+    suspend fun getDetails(@Path("id") id: String): NetworkResource<CoinDetailsDTO>
 
 }
