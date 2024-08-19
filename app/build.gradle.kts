@@ -51,6 +51,15 @@ android {
 
 dependencies {
 
+    implementation(libs.decompose.core)
+
+    implementation(libs.koin.android)
+
+    implementation(project(":domain"))
+    implementation(project(":presentation:navigation"))
+    implementation(project(":presentation:screens"))
+    implementation(project(":data"))
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
