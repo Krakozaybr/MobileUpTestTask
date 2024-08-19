@@ -1,79 +1,27 @@
 # Тестовое задание для стажировки "Нашкодим - Android"
+![Demo](demo.mp4)
+Приложение получает список криптовалют и список валют-измерений (chips) из [CoinGecko API](https://docs.coingecko.com/v3.0.1/reference/endpoint-overview)
+и отображает их.
+## Особенности
+* Список валют-измерений подгружается с сервера (узнал, что это не нужно, когда уже сделал)
+* Все данные, получаемые с API кэшируются<br>
+Списки криптовалют и детальная информация удаляются по прошествие 1 минуты с последнего использования,
+а список валют-измерений остаётся на всю сессию (т.к. они очень редко изменяются)
+* Pull to refresh
+* API ключ не используется (хотя добавить - не проблема), так что количество запросов в минуту довольно ограничено
+* Presentation navigation and logic имеет тесты
+## Декомпозиция задачи
+Изначально накидал [такой план](decomposition.md). Он частично оправдал себя:
+* Presentation ui components оправдали ожидания
+* Domain +- тоже, однако иногда требовались изменения в нём
+* Data layer занял немного больше времени
+* Presentation navigation and logic был сделан по-другому, т.к. я не учел,
+что два подгружаемых списка сильно связаны друг с другом и разбивка их на компоненты не стоит того
 ## Дополнительные библиотеки
 * [Decompose](https://github.com/arkivanov/Decompose/) + [MVIKotlin](https://github.com/arkivanov/mvikotlin)
 * [Koin](https://insert-koin.io/)
 * [Kotlin Immutable collections](https://github.com/Kotlin/kotlinx.collections.immutable)
-## Декомпозиция задачи:
-Глобально задачу можно разделить на работу по нескольким направлениям:
-- Domain layer (25m)
-- Data layer (120m)
-- Presentation layer:
-  - Navigation and logic (225m)
-  - Screens (100m) and components (230m)
-
-### Domain
-Начнём с domain слоя, т.к. от него зависят все остальные:
-- Models (5m):
-  - CoinInfo
-  - CoinDetails
-  - Currency
-- Repository (5m):
-  - CoinRepository
-  - CurrencyRepository
-- UseCases (5m):
-  - GetCoinListUseCase
-  - GetCurrencyListUseCase
-  - GetCoinInfoUseCase
-
-Также добавим вспомогательные классы для обработки ошибок (10m):
-- Resource
-- FailureReason
-
-Тестировать тут нечего (UseCase-ы тривиальные), так что идем дальше к, пожалуй, Presentation navigation
-
-### Presentation navigation and logic
-- CurrencyListComponent (75m)
-- CoinListComponent (75m)
-- CoinDetailsComponent (75m)
-
-Каждый компонент включает в себя интерфейс компонента, его реализацию и Store.
-Также для них нужны тесты. Если не знакомы с decompose + mvikotlin, то я 
-постараюсь с помощью комментариев объяснить большинство моментов.
-
-### Presentation ui components
-На первый взгляд напрашиваются такие компоненты:
-- Toolbar для списка криптовалют (10m)
-- Toolbar для дополнительной информации (10m)
-  - ToolbarTitle (10m)
-  - ToolbarBackButton (15m)
-- CurrencyList (15m + 10m)
-  - CurrencyChip (10m)
-- ListLoader (10m)
-- ErrorDisplay (10m + 30m)
-  - ErrorDisplayLogo (10m)
-  - ErrorDisplayText (10m)
-  - ErrorDisplayButton (10m)
-- CoinList (10m + 70m)
-  - CoinItem (10m + 60m)
-    - CoinItemImage (20m)
-    - CoinItemTitle (10m)
-    - CoinItemPrice (10m)
-    - CoinItemPriceChange (10m)
-    - CoinItemNotation - BTC, BNB, подпись снизу (10m)
-- CoinDetailsImage (10m)
-- CoinDetailsSubtitle - подзаголовки на экране 2 - Описание, Категории (10m)
-- CoinDetailsText (10m)
-
-Также нужно создать Compose configuration file
-с перечислением моделей из Domain модуля, т.к. даже несмотря на то,
-что они будут data class-ами с неизменяемыми полями, compose compiler
-не будет об этом знать, т.к. они располагаются в другом модуле.<br>
-[Подробнее об этом](https://developer.android.com/develop/ui/compose/performance/stability/fix#modules-solution)
-
-### Data layer
-- Repositories impls (20m на каждый)
-- API (60 min)
-  - /coins/markets - криптовалюты
-  - /coins/<id> - детальная информация
-  - /simple/supported_vs_currencies - валюты в тулбаре (RUB, USD...)
-- DTOs and mappers (20 min)
+* [Html-text](https://github.com/ch4rl3x/HtmlText)
+* [Immutable collections](https://github.com/Kotlin/kotlinx.collections.immutable)
+* [Coil](https://github.com/coil-kt/coil)
+* Для тестов используется JUnit5
