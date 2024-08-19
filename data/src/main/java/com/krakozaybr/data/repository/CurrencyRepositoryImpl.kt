@@ -1,6 +1,7 @@
 package com.krakozaybr.data.repository
 
 import com.krakozaybr.data.network.Api
+import com.krakozaybr.data.utils.MutableNeverEqualStateFlow
 import com.krakozaybr.domain.model.Currency
 import com.krakozaybr.domain.repository.CurrencyRepository
 import com.krakozaybr.domain.resource.FailureReason
@@ -11,6 +12,7 @@ import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.flow
 
@@ -19,10 +21,10 @@ internal class CurrencyRepositoryImpl(
 ) : CurrencyRepository {
 
     // Use default because error display of currency list is unknown
-    private val cache = MutableStateFlow<ImmutableList<Currency>>(default)
+    private val cache = MutableNeverEqualStateFlow<ImmutableList<Currency>>(default)
 
     override fun getCurrencies(): Flow<Resource<ImmutableList<Currency>, FailureReason>> {
-        return flow {
+        return channelFlow {
             if (cache.value == default) reloadCurrencies()
 
             cache.collectLatest { list ->
@@ -32,7 +34,7 @@ internal class CurrencyRepositoryImpl(
                 res.addAll(default)
                 res.addAll(list.filter { it !in default })
 
-                emit(
+                send(
                     Resource.Success(
                         res.toImmutableList()
                     )
@@ -43,7 +45,7 @@ internal class CurrencyRepositoryImpl(
 
     override suspend fun reloadCurrencies(): Resource<Unit, FailureReason> {
         api.supportedCurrencies().onSuccess {
-            cache.value = it.map { name -> Currency(name) }.toImmutableList()
+            cache.value = it.map { name -> Currency(name.uppercase()) }.toImmutableList()
         }
         // Success because if catch error from network, we show default
         return Resource.Success(Unit)

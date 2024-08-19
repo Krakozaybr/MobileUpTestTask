@@ -1,11 +1,12 @@
 package com.krakozaybr.data.repository
 
+import android.util.Log
 import com.krakozaybr.data.network.Api
+import com.krakozaybr.data.utils.MutableNeverEqualStateFlow
 import com.krakozaybr.domain.model.CoinDetails
 import com.krakozaybr.domain.model.CoinInfo
 import com.krakozaybr.domain.model.Currency
 import com.krakozaybr.domain.repository.CoinRepository
-import com.krakozaybr.domain.resource.DataError
 import com.krakozaybr.domain.resource.FailureReason
 import com.krakozaybr.domain.resource.NetworkResource
 import com.krakozaybr.domain.resource.Resource
@@ -20,9 +21,8 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.channelFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import java.util.concurrent.ConcurrentHashMap
 
@@ -48,11 +48,16 @@ internal class CoinRepositoryImpl(
     }
 
     override fun getCoins(currency: Currency): Flow<SimpleResource<ImmutableList<CoinInfo>>> {
-        return flow {
+        2 + 2
+        return channelFlow {
             coinListCache.getOrPut(
                 currency,
             ) {
-                val result = MutableStateFlow(api.loadCoins(currency))
+                Log.d("TAG", "getCoins: STARTED LOADING")
+
+                val result = MutableNeverEqualStateFlow(api.loadCoins(currency))
+
+                Log.d("TAG", "getCoins: LOADED")
 
                 coinListCache[currency] = result
 
@@ -66,7 +71,7 @@ internal class CoinRepositoryImpl(
                 }
 
                 result
-            }.collect(::emit)
+            }.collect(::send)
         }
     }
 
@@ -112,9 +117,9 @@ internal class CoinRepositoryImpl(
         ConcurrentHashMap<String, MutableStateFlow<NetworkResource<CoinDetails>>>()
 
     override fun getCoinDetails(id: String): Flow<SimpleResource<CoinDetails>> {
-        return flow {
+        return channelFlow {
 
-            val result = MutableStateFlow(api.loadDetails(id))
+            val result = MutableNeverEqualStateFlow(api.loadDetails(id))
 
             detailsCache[id] = result
 
@@ -127,7 +132,7 @@ internal class CoinRepositoryImpl(
                 }
             }
 
-            result.collect(::emit)
+            result.collect(::send)
 
         }
     }
