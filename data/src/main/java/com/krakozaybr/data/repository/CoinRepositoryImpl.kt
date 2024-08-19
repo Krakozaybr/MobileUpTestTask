@@ -52,11 +52,7 @@ internal class CoinRepositoryImpl(
             coinListCache.getOrPut(
                 currency,
             ) {
-                Log.d("TAG", "getCoins: STARTED LOADING")
-
                 val result = MutableNeverEqualStateFlow(api.loadCoins(currency))
-
-                Log.d("TAG", "getCoins: LOADED")
 
                 coinListCache[currency] = result
 
