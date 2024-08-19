@@ -3,45 +3,24 @@ package com.krakozaybr.mobileuptesttask
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.krakozaybr.mobileuptesttask.ui.theme.MobileUpTestTaskTheme
+import com.arkivanov.decompose.defaultComponentContext
+import com.krakozaybr.navigation.root.DefaultRootComponent
+import com.krakozaybr.screens.RootScreen
+import org.koin.android.ext.android.inject
 
 class MainActivity : ComponentActivity() {
+
+    private val componentFactory: DefaultRootComponent.Factory by inject()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        val component = componentFactory.create(
+            defaultComponentContext()
+        )
+
         setContent {
-            MobileUpTestTaskTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
-                }
-            }
+            RootScreen(component = component)
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    MobileUpTestTaskTheme {
-        Greeting("Android")
     }
 }
