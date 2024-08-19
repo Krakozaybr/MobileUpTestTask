@@ -22,9 +22,9 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 data class State(
-    val currencyState: CurrencyState,
     val coinState: CoinState,
-    val selectedCurrency: Currency
+    val currencyState: CurrencyState,
+    val selectedCurrency: Currency,
 ) {
     sealed interface CurrencyState {
 
@@ -34,6 +34,7 @@ data class State(
                 Currency("USD"),
             )
         }
+
         data class LoadSuccess(val currencies: ImmutableList<Currency>) : CurrencyState
 
         companion object {
@@ -51,7 +52,11 @@ data class State(
 
         data object Loading : CoinState
         data object LoadFailed : CoinState
-        data class LoadSuccess(val coins: ImmutableList<CoinInfo>) : CoinState
+        data class LoadSuccess(
+            val coins: ImmutableList<CoinInfo>,
+            val isRefreshing: Boolean = false,
+            val showRefreshFailedMessage: Boolean = false,
+        ) : CoinState
 
     }
 }
@@ -62,6 +67,7 @@ internal sealed interface Intent {
     data class ChooseCurrency(val currency: Currency) : Intent
     data class ShowDetails(val coin: CoinInfo) : Intent
     data object ReloadAll : Intent
+    data object HideRefreshFailedMessage : Intent
 
 }
 
@@ -115,13 +121,22 @@ internal class CoinListScreenStoreFactory(
 
         data object StartReloadingCoins : Msg
 
+        data object RefreshingFailed : Msg
+
+        data object RefreshingSuccess : Msg
+
+        data object HideRefreshFailedMessage : Msg
+
     }
 
     private inner class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
+
+        private var coinRefreshingJob: Job? = null
+        private var currencyRefreshingJob: Job? = null
+
         override fun executeIntent(intent: Intent) {
             when (intent) {
                 is Intent.ChooseCurrency -> {
-                    dispatch(Msg.StartReloadingCoins)
                     dispatch(Msg.CurrencyChanged(intent.currency))
                     forward(Action.StartLoadingCoins)
                 }
@@ -129,18 +144,39 @@ internal class CoinListScreenStoreFactory(
                 is Intent.ShowDetails -> publish(Label.ShowDetails(intent.coin))
                 Intent.ReloadAll -> {
                     val curState = state()
-                    scope.launch {
-                        dispatch(Msg.StartReloadingCoins)
-                        reloadCoinsUseCase(curState.selectedCurrency)
+
+                    // Check if we are already refreshing
+                    if (coinRefreshingJob?.isCancelled != false) {
+                        coinsLoadingJob = scope.launch {
+                            dispatch(Msg.StartReloadingCoins)
+                            val res = reloadCoinsUseCase(curState.selectedCurrency)
+
+                            val coinState = curState.coinState
+
+                            if (coinState !is State.CoinState.LoadSuccess) return@launch
+
+                            res.onFailure {
+                                dispatch(Msg.RefreshingFailed)
+                            }.onSuccess {
+                                dispatch(Msg.RefreshingSuccess)
+                            }
+
+                        }
                     }
-                    scope.launch {
-                        // Currency list isn`t likely to change often,
-                        // so we shouldn`t do unnecessary request
-                        if (curState.currencyState !is State.CurrencyState.LoadSuccess) {
-                            reloadCurrenciesUseCase()
+
+                    // Check if we are already refreshing
+                    if (currencyRefreshingJob?.isCancelled != false) {
+                        currencyRefreshingJob = scope.launch {
+                            // Currency list isn`t likely to change often,
+                            // so we shouldn`t do unnecessary request
+                            if (curState.currencyState !is State.CurrencyState.LoadSuccess) {
+                                reloadCurrenciesUseCase()
+                            }
                         }
                     }
                 }
+
+                Intent.HideRefreshFailedMessage -> dispatch(Msg.HideRefreshFailedMessage)
             }
         }
 
@@ -154,6 +190,7 @@ internal class CoinListScreenStoreFactory(
                         startLoadingCoins(state().selectedCurrency)
                     }
                 }
+
                 Action.StartLoadingCurrencies -> scope.launch {
                     startLoadingCurrencies()
                 }
@@ -204,7 +241,7 @@ internal class CoinListScreenStoreFactory(
                 }
                 // Victory!!!
                 is Msg.CoinsLoaded -> copy(
-                    coinState = State.CoinState.LoadSuccess(msg.coins)
+                    coinState = State.CoinState.LoadSuccess(coins = msg.coins)
                 )
                 // Check if selected didn`t change
                 is Msg.CurrencyChanged -> if (selectedCurrency != msg.newCurrency) {
@@ -227,9 +264,41 @@ internal class CoinListScreenStoreFactory(
                     }
                 }
 
-                Msg.StartReloadingCoins -> copy(
-                    coinState = State.CoinState.Loading,
-                )
+                Msg.StartReloadingCoins -> when (coinState) {
+                    // Case when state is LoadFailed, so we need to display Loading screen
+                    !is State.CoinState.LoadSuccess -> copy(
+                        coinState = State.CoinState.Loading,
+                    )
+                    // We should pass LoadSuccess screen, cause it has its loading behaviour
+                    else -> copy(
+                        coinState = coinState.copy(
+                            isRefreshing = true
+                        ),
+                    )
+                }
+
+                Msg.RefreshingSuccess -> if (coinState is State.CoinState.LoadSuccess) {
+                    copy(
+                        coinState = coinState.copy(
+                            isRefreshing = false
+                        )
+                    )
+                } else this
+
+                Msg.RefreshingFailed -> if (coinState is State.CoinState.LoadSuccess) {
+                    copy(
+                        coinState = coinState.copy(
+                            isRefreshing = false,
+                            showRefreshFailedMessage = true,
+                        )
+                    )
+                } else this
+
+                Msg.HideRefreshFailedMessage -> if (coinState is State.CoinState.LoadSuccess) {
+                    copy(
+                        coinState = coinState.copy(showRefreshFailedMessage = false)
+                    )
+                } else this
             }
 
     }

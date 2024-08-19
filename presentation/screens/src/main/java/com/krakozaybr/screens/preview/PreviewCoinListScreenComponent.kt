@@ -19,6 +19,9 @@ class PreviewCoinListScreenComponent : CoinListScreenComponent {
     override fun onShowDetails(coinInfo: CoinInfo) {
     }
 
+    override fun hideRefreshFailedImage() {
+    }
+
     override fun reloadAll() {
     }
 
@@ -33,7 +36,7 @@ class PreviewCoinListScreenComponent : CoinListScreenComponent {
                 )
             ),
             coinState = State.CoinState.LoadSuccess(
-                List(10) {
+                coins = List(10) {
                     CoinInfo(
                         id = "id$it",
                         priceChangePercentage = Math.pow(-1.0, it.toDouble()).toFloat() * it * 2,

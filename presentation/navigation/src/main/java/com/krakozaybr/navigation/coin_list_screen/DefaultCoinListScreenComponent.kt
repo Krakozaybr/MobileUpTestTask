@@ -48,6 +48,10 @@ class DefaultCoinListScreenComponent internal constructor(
         store.accept(Intent.ShowDetails(coinInfo))
     }
 
+    override fun hideRefreshFailedImage() {
+        store.accept(Intent.HideRefreshFailedMessage)
+    }
+
     class Factory internal constructor(
         private val storeFactory: CoinListScreenStoreFactory,
     ) {

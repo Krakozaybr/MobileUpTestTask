@@ -13,6 +13,8 @@ interface CoinListScreenComponent {
 
     fun onShowDetails(coinInfo: CoinInfo)
 
+    fun hideRefreshFailedImage()
+
     fun reloadAll()
 
 }
