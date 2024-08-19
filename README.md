@@ -1,5 +1,5 @@
 # Тестовое задание для стажировки "Нашкодим - Android"
-![Demo](demo.mp4)
+![Demo](demo.gif)
 Приложение получает список криптовалют и список валют-измерений (chips) из [CoinGecko API](https://docs.coingecko.com/v3.0.1/reference/endpoint-overview)
 и отображает их.
 ## Особенности
