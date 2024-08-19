@@ -20,5 +20,5 @@ val navigationModule = module {
     factoryOf(::CoinDetailsScreenStoreFactory)
     factoryOf(DefaultCoinDetailsScreenComponent::Factory)
 
-    factoryOf(::DefaultRootComponent)
+    factoryOf(DefaultRootComponent::Factory)
 }
