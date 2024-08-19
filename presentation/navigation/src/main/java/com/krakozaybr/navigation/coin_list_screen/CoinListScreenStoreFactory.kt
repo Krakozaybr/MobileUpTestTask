@@ -146,7 +146,7 @@ internal class CoinListScreenStoreFactory(
                     val curState = state()
 
                     // Check if we are already refreshing
-                    if (coinRefreshingJob?.isCancelled != false) {
+                    if (coinRefreshingJob?.isActive != true) {
                         coinsLoadingJob = scope.launch {
                             dispatch(Msg.StartReloadingCoins)
                             val res = reloadCoinsUseCase(curState.selectedCurrency)
@@ -165,7 +165,7 @@ internal class CoinListScreenStoreFactory(
                     }
 
                     // Check if we are already refreshing
-                    if (currencyRefreshingJob?.isCancelled != false) {
+                    if (currencyRefreshingJob?.isActive != true) {
                         currencyRefreshingJob = scope.launch {
                             // Currency list isn`t likely to change often,
                             // so we shouldn`t do unnecessary request

@@ -6,7 +6,6 @@ import com.krakozaybr.data.utils.MutableNeverEqualStateFlow
 import com.krakozaybr.domain.model.Currency
 import com.krakozaybr.domain.repository.CurrencyRepository
 import com.krakozaybr.domain.resource.DataError
-import com.krakozaybr.domain.resource.FailureReason
 import com.krakozaybr.domain.resource.NetworkResource
 import com.krakozaybr.domain.resource.Resource
 import com.krakozaybr.domain.resource.SimpleResource
@@ -45,6 +44,7 @@ internal class CurrencyRepositoryImpl(
                 val list = it.data
                 if (list.isEmpty()) {
                     // We shouldn`t send empty list
+                    cache.value = failure(DataError.Network.PAYLOAD_EMPTY)
                     failure(DataError.Network.PAYLOAD_EMPTY)
                 } else {
                     cache.value = Resource.Success(
@@ -56,6 +56,7 @@ internal class CurrencyRepositoryImpl(
                 }
             }
             is Resource.Failure -> {
+                cache.value = failure(it.error)
                 failure(it.error)
             }
         }
