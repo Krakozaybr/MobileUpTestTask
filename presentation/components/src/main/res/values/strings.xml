@@ -7,4 +7,5 @@
     <string name="caps_try">ПОПРОБОВАТЬ</string>
     <string name="price_change_up">+ %s%%</string>
     <string name="price_change_down">- %s%%</string>
+    <string name="snackbar_error_text">Произошла ошибка при загрузке</string>
 </resources>
