@@ -1,6 +1,7 @@
 package com.krakozaybr.data.dtos
 
 import com.krakozaybr.domain.model.CoinInfo
+import com.krakozaybr.domain.model.Currency
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
@@ -19,12 +20,13 @@ internal data class CoinInfoDTO(
     @SerialName("symbol")
     val symbol: String,
 ) {
-    fun map() = CoinInfo(
+    fun map(currency: Currency) = CoinInfo(
         id = id,
         priceChangePercentage = priceChangePercentage,
         name = name,
         imageLink = imageLink,
         price = price,
         symbol = symbol,
+        currency = currency
     )
 }

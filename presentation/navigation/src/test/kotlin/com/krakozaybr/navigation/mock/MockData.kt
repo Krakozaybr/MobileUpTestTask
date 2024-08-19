@@ -19,7 +19,8 @@ val mockCoinInfos = List(10) {
         name = "$it name",
         imageLink = "$it link",
         price = it.toFloat(),
-        symbol = "$it symbol"
+        symbol = "$it symbol",
+        currency = mockCurrencies.random()
     )
 }
 

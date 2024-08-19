@@ -7,4 +7,5 @@ data class CoinInfo(
     val imageLink: String,
     val price: Float,
     val symbol: String,
+    val currency: Currency
 )

@@ -29,7 +29,6 @@ import kotlin.random.Random
 @Composable
 fun CoinItemList(
     onCoinClick: (CoinInfo) -> Unit,
-    currency: Currency,
     coinList: ImmutableList<CoinInfo>,
     modifier: Modifier = Modifier,
     contentPaddingValues: PaddingValues = PaddingValues(vertical = AppTheme.sizes.screenPadding),
@@ -48,7 +47,6 @@ fun CoinItemList(
                         vertical = 12.dp,
                         horizontal = AppTheme.sizes.screenPadding
                     ),
-                currency = currency,
                 coin = it,
             )
         }
@@ -63,7 +61,6 @@ private fun CoinItemListPreview() {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             CoinItemList(
                 onCoinClick = {},
-                currency = Currency("RUB"),
                 coinList = List(10) {
                     CoinInfo(
                         id = "id$it",
@@ -71,7 +68,8 @@ private fun CoinItemListPreview() {
                         name = "$it name",
                         imageLink = "https://media.licdn.com/dms/image/v2/C510BAQGyuGalyYxfXQ/company-logo_200_200/company-logo_200_200/0/1631334696178?e=2147483647&v=beta&t=5TmFyg4zbmhC3J_ByYHr6aYCmFD8ZmNcpoRT8RNs2Kw",
                         price = it * 1000f,
-                        symbol = "${it}SB"
+                        symbol = "${it}SB",
+                        currency = Currency("RUB")
                     )
                 }.toImmutableList()
             )

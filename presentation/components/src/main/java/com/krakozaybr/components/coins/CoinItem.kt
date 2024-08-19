@@ -1,6 +1,5 @@
 package com.krakozaybr.components.coins
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -31,7 +30,6 @@ import kotlin.math.absoluteValue
 
 @Composable
 fun CoinItem(
-    currency: Currency,
     coin: CoinInfo,
     modifier: Modifier = Modifier
 ) {
@@ -51,7 +49,7 @@ fun CoinItem(
             Row {
                 CoinName(name = coin.name)
                 Spacer(modifier = Modifier.weight(1f))
-                CoinPrice(currency = currency, price = coin.price)
+                CoinPrice(currency = coin.currency, price = coin.price)
             }
             Row {
                 CoinSymbol(symbol = coin.symbol)
