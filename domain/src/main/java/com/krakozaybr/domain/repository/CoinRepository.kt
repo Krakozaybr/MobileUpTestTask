@@ -14,8 +14,7 @@ interface CoinRepository {
 
     fun getCoinDetails(id: String): Flow<Resource<CoinDetails, FailureReason>>
 
-    // Returns map of currency to result of reloading
-    suspend fun reloadCoins(): Map<Currency, Resource<Unit, FailureReason>>
+    suspend fun reloadCoins(currency: Currency): Resource<Unit, FailureReason>
 
     suspend fun reloadCoinDetails(id: String): Resource<Unit, FailureReason>
 

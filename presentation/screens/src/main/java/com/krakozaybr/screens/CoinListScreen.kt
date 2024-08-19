@@ -21,9 +21,8 @@ import com.krakozaybr.components.loader.Loader
 import com.krakozaybr.components.toolbars.CoinListToolbar
 import com.krakozaybr.navigation.coin_list_screen.CoinListScreenComponent
 import com.krakozaybr.navigation.coin_list_screen.State.CoinState
-import com.krakozaybr.navigation.coin_list_screen.State.CurrencyState.LoadFailed
+import com.krakozaybr.navigation.coin_list_screen.State.CurrencyState.DefaultLoad
 import com.krakozaybr.navigation.coin_list_screen.State.CurrencyState.LoadSuccess
-import com.krakozaybr.navigation.coin_list_screen.State.CurrencyState.Loading
 
 @Composable
 fun CoinListScreen(
@@ -62,17 +61,16 @@ fun CoinListScreen(
                         .fillMaxWidth(),
                     contentAlignment = Alignment.Center
                 ) {
-                    when (it) {
-                        LoadFailed -> {}
-                        Loading -> Loader()
-                        is LoadSuccess -> {
-                            CurrencyChipList(
-                                selected = selectedCurrency,
-                                onChipClick = component::onSelectCurrency,
-                                currencyList = it.currencies
-                            )
-                        }
+                    val currencies = when (it) {
+                        DefaultLoad -> DefaultLoad.currencies
+                        is LoadSuccess -> it.currencies
                     }
+                    CurrencyChipList(
+                        modifier = Modifier.fillMaxWidth(),
+                        selected = selectedCurrency,
+                        onChipClick = component::onSelectCurrency,
+                        currencyList = currencies
+                    )
                 }
             }
 
@@ -96,8 +94,6 @@ fun CoinListScreen(
                     is CoinState.LoadSuccess -> {
                         CoinItemList(
                             onCoinClick = component::onShowDetails,
-                            currency = selectedCurrency
-                                ?: throw RuntimeException("Currency cannot be null if coins are loaded"),
                             coinList = it.coins
                         )
                     }

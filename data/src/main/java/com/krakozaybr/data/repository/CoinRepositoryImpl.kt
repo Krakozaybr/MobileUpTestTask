@@ -42,13 +42,12 @@ internal class CoinRepositoryImpl(
         // (for example, activity destroy)
         return externalScope.async {
             getList(currency.name).mapData {
-                it.map { dto -> dto.map() }.toImmutableList()
+                it.map { dto -> dto.map(currency) }.toImmutableList()
             }
         }.await()
     }
 
     override fun getCoins(currency: Currency): Flow<SimpleResource<ImmutableList<CoinInfo>>> {
-        2 + 2
         return channelFlow {
             coinListCache.getOrPut(
                 currency,
@@ -75,32 +74,26 @@ internal class CoinRepositoryImpl(
         }
     }
 
-    override suspend fun reloadCoins(): Map<Currency, SimpleResource<Unit>> {
-        return coinListCache.map { (k, v) ->
-            // Iterating over all subscriptions and reload them simultaneously
+    override suspend fun reloadCoins(currency: Currency): SimpleResource<Unit> {
 
-            // Do it in external scope to be invincible for outer cancellations
-            // (for example, activity destroy)
-            externalScope.async {
-                val res = api.loadCoins(k)
-                res.onSuccess {
-                    // if success just update value
-                    v.value = res
-                }.onFailure {
-                    // if error we should pass old value if it was success
-                    // and set new error if not
-                    if (v.value is Resource.Failure) {
-                        v.value = res
-                    }
+        val state = coinListCache[currency]?.takeIf { it.subscriptionCount.value > 0 }
+            ?: throw RuntimeException("Reload coin list shouldn`t be called if there is no subscriptions")
+
+        return externalScope.async {
+            val res = api.loadCoins(currency)
+            res.onSuccess {
+                // if success just update value
+                state.value = res
+            }.onFailure {
+                // if error we should pass old value if it was success
+                // and set new error if not
+                if (state.value is Resource.Failure) {
+                    state.value = res
                 }
-                // return Pair<Currency, Resource<Unit, DataError.Network>
-                k to res.mapData { Unit }
             }
-        }
-            // Awaiting for all
-            .map { it.await() }
-            // And creating from results map
-            .associate { it }
+            // return Pair<Currency, Resource<Unit, DataError.Network>
+            res.mapData { Unit }
+        }.await()
     }
 
     private suspend fun Api.loadDetails(id: String): NetworkResource<CoinDetails> {

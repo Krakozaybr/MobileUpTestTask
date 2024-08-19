@@ -7,7 +7,6 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.CoroutineExecutor
 import com.krakozaybr.domain.model.CoinInfo
 import com.krakozaybr.domain.model.Currency
-import com.krakozaybr.domain.resource.Resource
 import com.krakozaybr.domain.resource.onFailure
 import com.krakozaybr.domain.resource.onSuccess
 import com.krakozaybr.domain.use_case.GetCoinListUseCase
@@ -16,19 +15,35 @@ import com.krakozaybr.domain.use_case.ReloadCoinsUseCase
 import com.krakozaybr.domain.use_case.ReloadCurrenciesUseCase
 import com.krakozaybr.navigation.coin_list_screen.CoinListScreenStore.Label
 import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toImmutableList
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 data class State(
     val currencyState: CurrencyState,
     val coinState: CoinState,
-    val selectedCurrency: Currency? = null
+    val selectedCurrency: Currency
 ) {
     sealed interface CurrencyState {
 
-        data object Loading : CurrencyState
-        data object LoadFailed : CurrencyState
+        data object DefaultLoad : CurrencyState {
+            val currencies = persistentListOf(
+                Currency("RUB"),
+                Currency("USD"),
+            )
+        }
         data class LoadSuccess(val currencies: ImmutableList<Currency>) : CurrencyState
+
+        companion object {
+            internal fun convenientOrder(currencies: ImmutableList<Currency>): ImmutableList<Currency> {
+                val res = mutableListOf<Currency>()
+                res.addAll(DefaultLoad.currencies)
+                res.addAll(currencies.filter { it !in DefaultLoad.currencies })
+                return res.toImmutableList()
+            }
+        }
 
     }
 
@@ -73,15 +88,20 @@ internal class CoinListScreenStoreFactory(
             name = "CoinListScreenStore",
             initialState = State(
                 coinState = State.CoinState.Loading,
-                currencyState = State.CurrencyState.Loading
+                currencyState = State.CurrencyState.DefaultLoad,
+                selectedCurrency = State.CurrencyState.DefaultLoad.currencies.first()
             ),
-            bootstrapper = SimpleBootstrapper(Action.StartLoading),
+            bootstrapper = SimpleBootstrapper(
+                Action.StartLoadingCoins,
+                Action.StartLoadingCurrencies
+            ),
             executorFactory = ::ExecutorImpl,
             reducer = ReducerImpl
         ) {}
 
     private sealed interface Action {
-        data object StartLoading : Action
+        data object StartLoadingCoins : Action
+        data object StartLoadingCurrencies : Action
     }
 
     private sealed interface Msg {
@@ -93,50 +113,69 @@ internal class CoinListScreenStoreFactory(
         data class CoinsLoaded(val coins: ImmutableList<CoinInfo>) : Msg
         data class CurrencyChanged(val newCurrency: Currency) : Msg
 
+        data object StartReloadingCoins : Msg
+
     }
 
     private inner class ExecutorImpl : CoroutineExecutor<Intent, Action, State, Msg, Label>() {
         override fun executeIntent(intent: Intent) {
             when (intent) {
-                is Intent.ChooseCurrency -> dispatch(Msg.CurrencyChanged(intent.currency))
+                is Intent.ChooseCurrency -> {
+                    dispatch(Msg.StartReloadingCoins)
+                    dispatch(Msg.CurrencyChanged(intent.currency))
+                    forward(Action.StartLoadingCoins)
+                }
+
                 is Intent.ShowDetails -> publish(Label.ShowDetails(intent.coin))
-                Intent.ReloadAll -> scope.launch {
-                    if (state().currencyState is State.CurrencyState.LoadFailed) {
-                        reloadCurrenciesUseCase().onSuccess {
-                            reloadCoinsUseCase()
+                Intent.ReloadAll -> {
+                    val curState = state()
+                    scope.launch {
+                        dispatch(Msg.StartReloadingCoins)
+                        reloadCoinsUseCase(curState.selectedCurrency)
+                    }
+                    scope.launch {
+                        // Currency list isn`t likely to change often,
+                        // so we shouldn`t do unnecessary request
+                        if (curState.currencyState !is State.CurrencyState.LoadSuccess) {
+                            reloadCurrenciesUseCase()
                         }
-                    } else {
-                        reloadCoinsUseCase()
                     }
                 }
             }
         }
 
+        private var coinsLoadingJob: Job? = null
+
         override fun executeAction(action: Action) {
             when (action) {
-                Action.StartLoading -> scope.launch {
-                    startLoading()
+                Action.StartLoadingCoins -> {
+                    coinsLoadingJob?.cancel()
+                    coinsLoadingJob = scope.launch {
+                        startLoadingCoins(state().selectedCurrency)
+                    }
+                }
+                Action.StartLoadingCurrencies -> scope.launch {
+                    startLoadingCurrencies()
                 }
             }
         }
 
-        suspend fun startLoading() {
+        private suspend fun startLoadingCoins(currency: Currency) {
+            getCoinListUseCase(currency).collect { res ->
+                res.onSuccess { data ->
+                    dispatch(Msg.CoinsLoaded(data))
+                }.onFailure {
+                    dispatch(Msg.CoinsLoadFailed)
+                }
+            }
+        }
+
+        private suspend fun startLoadingCurrencies() {
             getCurrencyListUseCase().collectLatest {
                 it.onSuccess { data ->
                     dispatch(Msg.CurrencyLoaded(data))
                 }.onFailure {
                     dispatch(Msg.CurrencyLoadFailed)
-                }
-                // We can load coins only if selectedCurrency is available
-                // and currencies are loaded
-                state().selectedCurrency?.let { currency ->
-                    getCoinListUseCase(currency).collect { res ->
-                        res.onSuccess { data ->
-                            dispatch(Msg.CoinsLoaded(data))
-                        }.onFailure {
-                            dispatch(Msg.CoinsLoadFailed)
-                        }
-                    }
                 }
             }
         }
@@ -149,7 +188,7 @@ internal class CoinListScreenStoreFactory(
                 Msg.CurrencyLoadFailed -> {
                     if (currencyState !is State.CurrencyState.LoadSuccess) {
                         copy(
-                            currencyState = State.CurrencyState.LoadFailed,
+                            currencyState = State.CurrencyState.DefaultLoad,
                             coinState = State.CoinState.LoadFailed
                         )
                     } else this
@@ -175,16 +214,23 @@ internal class CoinListScreenStoreFactory(
                         coinState = State.CoinState.Loading
                     )
                 } else this
+
                 is Msg.CurrencyLoaded -> {
                     if (msg.currencies.isEmpty()) {
                         reduce(Msg.CurrencyLoadFailed)
                     } else {
+                        val currencies = State.CurrencyState.convenientOrder(msg.currencies)
                         copy(
-                            currencyState = State.CurrencyState.LoadSuccess(msg.currencies),
-                            selectedCurrency = selectedCurrency ?: msg.currencies.first()
+                            currencyState = State.CurrencyState.LoadSuccess(currencies),
+                            selectedCurrency = selectedCurrency ?: currencies.first()
                         )
                     }
                 }
+
+                Msg.StartReloadingCoins -> copy(
+                    coinState = State.CoinState.Loading,
+                )
             }
+
     }
 }

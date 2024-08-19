@@ -29,8 +29,8 @@ class MockCoinRepository(
         }
     }
 
-    override suspend fun reloadCoins(): Map<Currency, Resource<Unit, FailureReason>> {
-        return mockCurrencies.associateWith { Resource.Success(Unit) }
+    override suspend fun reloadCoins(currency: Currency): Resource<Unit, FailureReason> {
+        return Resource.Success(Unit)
     }
 
     override suspend fun reloadCoinDetails(id: String): Resource<Unit, FailureReason> {
