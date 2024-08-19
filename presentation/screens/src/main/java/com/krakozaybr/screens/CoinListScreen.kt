@@ -78,14 +78,15 @@ fun CoinListScreen(
 
         }
 
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            val coinListState by remember {
-                derivedStateOf {
-                    model.coinState
-                }
-            }
 
-            Crossfade(targetState = coinListState, label = "Coin list state crossfade") {
+        val coinListState by remember {
+            derivedStateOf {
+                model.coinState
+            }
+        }
+
+        Crossfade(targetState = coinListState, label = "Coin list state crossfade") {
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                 when (it) {
                     CoinState.LoadFailed -> {
                         ErrorBanner(onRetryClick = component::reloadAll)
