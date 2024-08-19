@@ -259,7 +259,7 @@ internal class CoinListScreenStoreFactory(
                         val currencies = State.CurrencyState.convenientOrder(msg.currencies)
                         copy(
                             currencyState = State.CurrencyState.LoadSuccess(currencies),
-                            selectedCurrency = selectedCurrency ?: currencies.first()
+                            selectedCurrency = selectedCurrency
                         )
                     }
                 }
