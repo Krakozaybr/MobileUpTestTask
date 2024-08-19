@@ -9,7 +9,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.unit.Dp
 import com.krakozaybr.components.theme.AppTheme
-import extensions.dropShadowOutOfBounds
+import com.krakozaybr.components.extensions.dropShadowOutOfBounds
 
 @Composable
 fun AppToolbar(
